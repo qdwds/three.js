@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@types/three": "^0.103.2",
+    "three": "^0.123.0"
+  },
+  "name": "three",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qdwds/three.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qdwds/three.js/issues"
+  },
+  "homepage": "https://github.com/qdwds/three.js#readme",
+  "description": ""
+}
