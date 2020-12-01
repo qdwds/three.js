@@ -121,9 +121,9 @@
             this.stats.update()
             requestAnimationFrame(() => this.render())
             let cube = this.scene.getObjectByName('cube');
-            cube.rotation.x += 0.01
+            cube.rotation.x += config.x;
             let sphere = this.scene.getObjectByName('sphere');
-            sphere.rotation.y += 0.01;
+            sphere.rotation.y += config.x;
             //  球来回跳
             this.step += config.x
             sphere.position.x = 20 + (10 * (Math.cos(this.step)));
