@@ -9,6 +9,16 @@
   dependencies:
     three "*"
 
+dat.gui@^0.7.7:
+  version "0.7.7"
+  resolved "https://registry.npm.taobao.org/dat.gui/download/dat.gui-0.7.7.tgz#7f96dbd21621a76385203659aebfa264ee6ae89b"
+  integrity sha1-f5bb0hYhp2OFIDZZrr+iZO5q6Js=
+
+stats.js@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.npm.taobao.org/stats.js/download/stats.js-0.17.0.tgz#b1c3dc46d94498b578b7fd3985b81ace7131cc7d"
+  integrity sha1-scPcRtlEmLV4t/05hbgaznExzH0=
+
 three@*, three@^0.123.0:
   version "0.123.0"
   resolved "https://registry.npm.taobao.org/three/download/three-0.123.0.tgz#3bb6d8f908a432eb7cd450f7eab6dd40fde53085"
