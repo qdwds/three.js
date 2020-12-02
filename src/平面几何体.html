@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .box {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .fl {
+            width: 50vw;
+            height: 50vh;
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/stats.js/build/stats.min.js"></script>
+<script src="../node_modules/dat.gui/build/dat.gui.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    const config = {
+        meshX: 6,
+        meshY: 0,
+        meshZ: 13,
+        widthSegments: 123,
+        heightSegments: 132
+    }
+    let scene = null,
+        camera = null,
+        renderer = null
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        //  设置上之后才能显示出来  相机位置
+        camera.position.z = 50;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(new THREE.Color(0xcccccc));
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    
+    function box() {
+        let planeGeometry = new THREE.PlaneGeometry(40, 40,config.widthSegments, config.heightSegments);
+        let planeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffff,
+            side: THREE.DoubleSide,
+            wireframe: true
+        })
+        planeGeometry.name = 'planeGeometry'
+        let mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        mesh.name = 'mesh'
+        scene.add(mesh)
+    }
+    function gui() {
+        let gui = new dat.GUI();
+        console.log(gui);
+        gui.add(config, 'meshX', 0, 100);
+        gui.add(config, 'meshY', 0, 100);
+        gui.add(config, 'meshZ', 0, 100);
+        gui.add(config, 'widthSegments', 0, 100).onChange((e)=>{
+            console.log( Math.round(e));
+        });
+        gui.add(config, 'heightSegments', 0, 100);
+    }
+    function render() {
+        requestAnimationFrame(_ => render())
+
+        let mesh = scene.getObjectByName('mesh');
+        mesh.rotation.x += 0.01;
+        mesh.rotation.y += 0.01;
+        mesh.rotation.z += 0.01;
+        // mesh.rotation.x = config.meshX;
+        // mesh.rotation.y = config.meshY;
+        // // mesh.rotation.z = config.meshZ;
+
+
+        renderer.render(scene, camera)
+    }
+    function createThree() {
+        init();
+        box();
+        render();
+        gui();
+    }
+
+    window.onload = function () {
+        createThree()
+    }
+</script>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .box {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .fl {
+            width: 50vw;
+            height: 50vh;
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/stats.js/build/stats.min.js"></script>
+<script src="../node_modules/dat.gui/build/dat.gui.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    const config = {
+        radius: 15,
+        segments: 30,
+        size: 1,
+        pi: 2,
+    }
+    let scene = null,
+        camera = null,
+        renderer = null
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        //  设置上之后才能显示出来  相机位置
+        camera.position.z = 50;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(new THREE.Color(0xcccccc));
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+
+    function box() {
+        const geomerty = new THREE.CircleGeometry(config.radius, config.segments, 0, Math.PI * config.pi);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xfff,
+            side: THREE.DoubleSide,
+            wireframe: true
+        })
+        const mesh = new THREE.Mesh(geomerty, material);
+        mesh.name = 'mesh'
+        scene.add(mesh)
+    }
+    function gui() {
+        let gui = new dat.GUI();
+        console.log(gui);
+        let mesh = scene.getObjectByName('mesh');
+        console.log(mesh.geometry.parameters);
+        let parameters = mesh.geometry.parameters
+        gui.add(config, 'radius', 0, 100).onChange(e => {
+            parameters.radius = e
+         
+        })
+        gui.add(config, 'segments', 3, 100).onChange(e=>{
+            parameters.segments = e ;
+            console.log(e);
+            console.log(parameters);
+        });
+    }
+    function render() {
+        requestAnimationFrame(_ => render())
+        renderer.render(scene, camera)
+    }
+    function createThree() {
+        init();
+        box();
+        render();
+        gui();
+    }
+
+    window.onload = function () {
+        createThree()
+    }
+</script>
