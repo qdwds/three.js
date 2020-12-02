@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../node_modules/three/build/three.min.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = 200
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xcccccc);
+        document.body.appendChild(renderer.domElement);
+        new THREE.OrbitControls(camera, renderer.domElement);
+    }
+    function render() {
+        renderer.render(scene, camera)
+    }
+    // 线
+    function light() {
+        let geometry = new THREE.Geometry();
+        let material = new THREE.LineBasicMaterial({
+            vertexColors: true,
+            // color: 0xff4400
+        })
+        let c1 = new THREE.Color(0x44444),
+            c2 = new THREE.Color(0xff0000),
+            c3 = new THREE.Color(0xfffff);
+        console.log(c1,c2,c3);
+        let p1 = new THREE.Vector3(-100, 0, 0),
+            p2 = new THREE.Vector3(100, 0, 0),
+            p3 = new THREE.Vector3(-100, 100, 0);
+
+        geometry.vertices.push(p1);
+        geometry.vertices.push(p2);
+        geometry.vertices.push(p3);
+        geometry.colors.push(c1, c2,c3);
+        console.log(geometry);
+
+        let line = new THREE.Line(geometry, material ,THREE.LineSegments)
+        scene.add(line)
+    }
+    function createInit() {
+        init()
+        light()
+        render();
+    }
+    window.onload = function () {
+        createInit()
+    }
+</script>
