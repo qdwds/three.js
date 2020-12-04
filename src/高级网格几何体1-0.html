@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+
+</body>
+
+</html>
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer;
+    function createScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
+        camera.position.z = 100;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild(renderer.domElement);
+    }
+    function light() {
+        let box1 = new THREE.BoxGeometry(2, 2, 2);
+        let box2 = new THREE.BoxGeometry(10,10,10);
+        let material = new THREE.MeshBasicMaterial({
+            color:0xffffff,
+        })
+        let Mesh1 = new THREE.Mesh(box1,material)
+        Mesh1.name = 'mesh1'
+        let Mesh2 = new THREE.Mesh(box2,material)
+        Mesh2.position.x = 10
+        let group = new THREE.Object3D();
+        group.name = 'group'
+        group.add(Mesh1);
+        group.add(Mesh2);
+        scene.add(group);
+    }
+    function render() {
+        requestAnimationFrame(() => render());
+        scene.getObjectByName('group').rotation.y += 0.01;
+        scene.getObjectByName('mesh1').rotation.x += 0.1
+        renderer.render(scene, camera)
+    }
+    function init() {
+        createScene();
+        light()
+        render()
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+</script>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+
+</body>
+
+</html>
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer
+    function createScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 300;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x888888);
+        document.body.appendChild(renderer.domElement);
+    }
+    function light() {
+
+        // let material = new THREE.SpriteMaterial();
+        // for (let x = 0; x < 5; x++) {
+        //     for (let y = 0; y < 5; y++) {
+        //         let sprite = new THREE.Sprite(material);
+        //         sprite.position.set(x * 20, y * 20, 0);
+        //         scene.add(sprite)
+        //     }
+        // }
+
+        const geometry = new THREE.Geometry();
+        const material = new THREE.PointCloudMaterial({
+            size: 14,
+            vertexColors: true,
+        });
+        for (let x = -5; x < 5; x++) {
+            for (let y = -5; y < 5; y++) {
+                let particle = new THREE.Vector3(x * 10,y * 10 ,0);
+                geometry.vertices.push(particle);
+                geometry.colors.push(new THREE.Color(Math.random () * 0xffffff))
+            }
+        }
+        let cloud = new THREE.PointCloud(geometry,material);
+        console.log(cloud);
+        cloud.name = 'cloud'
+        scene.add(cloud)
+    }
+    function render() {
+        requestAnimationFrame(render)
+        scene.getObjectByName('cloud').rotation.x += 0.01;
+        scene.getObjectByName('cloud').rotation.y += 0.01;
+        scene.getObjectByName('cloud').rotation.z += 0.01;
+        renderer.render(scene, camera)
+    }
+    function init() {
+        createScene();
+        light()
+        render()
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+</script>
