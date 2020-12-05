@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+
+</body>
+
+</html>
+<script src="../../node_modules/stats.js/build/stats.min.js"></script>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/dat.gui/build/dat.gui.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene = null,
+        camera = null,
+        renderer = null,
+        light = null,
+        boxBg = null
+    config = {
+        color: `#404040`
+    }
+
+
+    function createinit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(-30, 40, 30);
+        camera.lookAt(scene.position)
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(new THREE.Color(0xffffff))
+
+        //  操作
+        let controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // controls.enableDamping = true;
+        // controls.dampingFactor = 0.25;
+        // controls.enableZoom = false;
+
+        // MeshBasicMaterial    这个不透光~~~~~~
+        let planeGeometry = new THREE.PlaneGeometry(60, 40, 1, 1);
+        let planeMaterial = new THREE.MeshLambertMaterial({ color: 0xa0522d })
+        let plane = new THREE.Mesh(planeGeometry, planeMaterial)
+        scene.add(plane)
+        plane.rotation.x = -0.5 * Math.PI;
+        plane.position.set(15, 0, 0);
+        
+        //  不会产生阴影 不增加光 默认是黑色
+        light = new THREE.AmbientLight(0x404040, 10); // soft white light
+        scene.add(light);
+        document.body.appendChild(renderer.domElement);
+
+    }
+
+    function box() {
+        let box = new THREE.BoxGeometry(10, 10, 10);
+        boxBg = new THREE.MeshLambertMaterial({ color: 'red' });
+        let mesh = new THREE.Mesh(box, boxBg);
+        mesh.position.y += 10;
+        console.log(mesh);
+        scene.add(mesh)
+    }
+    function configGui() {
+        let gui = new dat.GUI();
+        gui.addColor(config, 'color').onChange(e => {
+            light.color = new THREE.Color(e)
+            boxBg.color = new THREE.Color(e)
+            config.color = e;
+        })
+    }
+
+    function render() {
+        requestAnimationFrame(() => render());
+        renderer.render(scene, camera)
+    }
+
+    function init() {
+        createinit();
+        box()
+        render();
+        configGui();
+    }
+</script>
