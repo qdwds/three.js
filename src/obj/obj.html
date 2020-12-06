@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/OBJLoader.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 500;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xffffff);
+        document.body.appendChild(renderer.domElement)
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    function axes() {
+        let axes = new THREE.AxesHelper(200);
+        scene.add(axes)
+    }
+    function light() {
+        let light = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(light)
+    }
+    function loader() {
+        let obj = new THREE.OBJLoader()
+        let texture = new THREE.TextureLoader().load('../../models/img/person.jpg')
+        obj.load(
+            '../../models/person.obj',
+            (obj) => {
+                //  遍历大模型下面的小模型
+                obj.traverse(child => {
+                    if (child instanceof THREE.Mesh) {
+                        child.material.map = texture
+                    }
+                })
+                scene.position.y = -100;
+                scene.add(obj)
+            }, (event) => {
+                if (event.lengthComputable) {
+                    let p = event.loaded / event.total * 100;
+                    console.log(`已经加载了${p}%`);
+                }
+            }, err => {
+                console.log(err);
+            })
+    }
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera)
+    }
+    window.onload = function () {
+        init();
+        axes();
+        light();
+        loader();
+        render();
+    }
+</script>

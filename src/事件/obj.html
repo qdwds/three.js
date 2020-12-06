@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        raycaster
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 500;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xffffff);
+        document.body.appendChild(renderer.domElement)
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+        document.addEventListener('click',onmouse)
+    }
+    function axes() {
+        let axes = new THREE.AxesHelper(200);
+        scene.add(axes)
+    }
+    function light() {
+        let light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1,1,10).normalize();
+        scene.add(light)
+    }
+    function loader() {
+        let geometry = new THREE.BoxGeometry(10,10,10);
+        for (let i = 0; i < 1000; i++) {
+            let object = new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({
+                color:Math.random() * 0xffffff
+            }))
+            object.position.x = Math.random() * 800 - 400;
+            object.position.y = Math.random() * 800 - 400;
+            object.position.z = Math.random() * 800 - 400;
+
+            object.rotation.x = Math.random() * 2 * Math.PI;
+            object.rotation.y = Math.random() * 2 * Math.PI;
+            object.rotation.z = Math.random() * 2 * Math.PI;
+            object.scale.x = Math.random() + 0.5;
+            object.scale.y = Math.random() + 0.5;
+            object.scale.z = Math.random() + 0.5;
+            object.name = 'object';
+            scene.add(object)
+        }
+    }
+    function onmouse(event){
+        console.log(event);
+        event.preventDefault();
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    }
+    function render() {
+        requestAnimationFrame(render);
+        raycaster.setFromCamera(mouse,camera);
+        // let intersects = raycaster.intersectObjects(scene.chidlren);
+        // for (let i = 0; i < intersects.length; i++) {
+        //     intersects[0].object.matarial.emissive.setHex(0xff0000)
+        // }
+        renderer.render(scene, camera)
+    }
+    window.onload = function () {
+        init();
+        axes();
+        light();
+        loader();
+        render();
+    }
+</script>
