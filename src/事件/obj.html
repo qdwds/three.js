@@ -33,11 +33,7 @@
 
         raycaster = new THREE.Raycaster();
         mouse = new THREE.Vector2();
-        document.addEventListener('click',onmouse)
-    }
-    function axes() {
-        let axes = new THREE.AxesHelper(200);
-        scene.add(axes)
+        document.addEventListener('mousemove',onmouse)
     }
     function light() {
         let light = new THREE.DirectionalLight(0xffffff, 1);
@@ -65,23 +61,25 @@
         }
     }
     function onmouse(event){
-        console.log(event);
         event.preventDefault();
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse,camera);
+        let intersects = raycaster.intersectObjects(scene.children)[0];
+        if(intersects?.object !== undefined){
+            intersects.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        }else{
+            console.error(intersects)
+        }
     }
     function render() {
         requestAnimationFrame(render);
-        raycaster.setFromCamera(mouse,camera);
-        // let intersects = raycaster.intersectObjects(scene.chidlren);
-        // for (let i = 0; i < intersects.length; i++) {
-        //     intersects[0].object.matarial.emissive.setHex(0xff0000)
-        // }
+       
         renderer.render(scene, camera)
     }
     window.onload = function () {
         init();
-        axes();
         light();
         loader();
         render();
