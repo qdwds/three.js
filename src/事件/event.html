@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        raycaster,
+        mouse;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xcccccc);
+        console.log(renderer);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+        window.addEventListener('click', onEvent)
+    }
+    function axes() {
+        let axes = new THREE.AxesHelper(20);
+        axes.position.y = 0.5;
+        scene.add(axes)
+    }
+    function box(x) {
+        let geometry = new THREE.BoxGeometry(10, 10, 10);
+        let material = new THREE.MeshBasicMaterial({
+            color: 0xffff33
+        });
+        let mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = x;
+        mesh.position.y = 10
+        scene.add(mesh);
+        console.log(mesh);
+    }
+    function onEvent(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const interects = raycaster.intersectObjects(scene.children, true)[0];
+
+        //  选中后 修改颜色
+        if (!(interects?.object instanceof THREE.GridHelper) && interects?.object !== undefined) {
+            interects.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        } else {
+            console.error(interects)
+        }
+    }
+    function grid() {
+        let grid = new THREE.GridHelper(100, 50, 0xff4400, 0x337788);
+        scene.add(grid)
+    }
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+    }
+    function init() {
+        createInit();
+        box(0)
+        box(20)
+        axes();
+        grid();
+        render();
+    }
+    window.onload = function () {
+        init();
+    }
+</script>
