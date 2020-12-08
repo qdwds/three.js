@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth,innerHeight);
+        renderer.setClearColor(0xcccccc);
+        console.log(renderer);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera,renderer.domElement)
+    }
+    function axes(){
+        let geometry = new THREE.ConeGeometry(10,40,10);
+        let material = new THREE.MeshBasicMaterial({
+            color:0x00ffff
+        })
+        let mesh = new THREE.Mesh(geometry,material);
+        // 显示模型
+        scene.add(new THREE.BoxHelper(mesh,0xffffff))
+    }
+    function render(){
+        requestAnimationFrame(render);
+        renderer.render(scene,camera);
+    }
+    function init() {
+        createInit();
+        axes();
+        render();
+    }
+    window.onload = function (){
+        init();
+    }
+</script>
