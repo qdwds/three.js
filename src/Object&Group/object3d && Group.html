@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer;
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xffffff);
+        document.body.appendChild(renderer.domElement);
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    function axes() {
+        // let axes = new THREE.AxesHelper(20);
+        // scene.add(axes)
+        let axes = new THREE.AxesHelper(20);
+        scene.add(axes)
+
+        let box1 = new THREE.BoxGeometry(10, 10, 10);
+        let box2 = new THREE.BoxGeometry(20, 20, 10);
+        let material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            side: THREE.DoubleSide
+        })
+
+        let mesh1 = new THREE.Mesh(box1,material);
+        mesh1.name='mesh1'
+        let mesh2 = new THREE.Mesh(box2,material);
+        mesh2.position.y = 20;
+
+        let objects = new THREE.Object3D();
+        objects.name = 'objects'
+        objects.add(mesh1)
+        objects.add(mesh2);
+        scene.add(objects)
+    }
+    function render() {
+        requestAnimationFrame(render)
+        scene.getObjectByName('mesh1').rotation.x += 0.01;
+        scene.getObjectByName('objects').rotation.y += 0.01;
+        renderer.render(scene, camera)
+    }
+    window.onload = function () {
+        init();
+        axes();
+        render();
+    }
+</script>

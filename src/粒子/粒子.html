@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/BVHLoader.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
+        camera.position.z = 1000;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth,innerHeight);
+        renderer.setClearColor(0xcccccc);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera,renderer.domElement)
+
+       
+    }
+    function axes(){
+     let axes = new THREE.AxesHelper(100);
+     scene.add(axes);
+     let grid = new THREE.Points(
+         new THREE.PlaneBufferGeometry(100,100,10,10),
+         new THREE.PointsMaterial({
+             color:0x00ff00,
+             size:10
+         })
+     )
+     scene.add(grid);
+    }
+    function box(){
+        // let obj = new THREE.BVHLoader();
+        // obj.load('../../models/person.obj',(o)=>{
+        //     console.log(o);
+        //     // o.children[0].material.color.set(new THREE.Color(0xff0000))
+        //     // scene.add(new THREE.AmbientLight(0xffffff,1))
+        //     // scene.add(o)
+        //     // console.log(o);
+        //     // var bufferGeometry = new THREE.BufferGeometry()
+        //     // bufferGeometry.addGroup(o)
+        //     // console.log(bufferGeometry);
+        //     // let famale = new THREE.Points(bufferGeometry,new THREE.PointsMaterial({
+        //     //     color:0x00ff00,
+        //     //     size:10
+        //     // }))
+        //     // console.log(famale);
+        //     // scene.add(o)
+        // })
+    }
+    function render(){
+        requestAnimationFrame(render);
+        renderer.render(scene,camera);
+    }
+    function init() {
+        createInit();
+        // axes();
+        box();
+        render();
+    }
+    window.onload = function (){
+        init();
+    }
+</script>

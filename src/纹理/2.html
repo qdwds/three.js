@@ -44,22 +44,14 @@
     }
     function box() {
         let geometry = new THREE.BoxGeometry(10, 10, 10);
-        let texture = new THREE.TextureLoader().load('../../image/timg.jpeg',
+        //  加载指定位置的图片
+        let texture =  THREE.ImageUtils.loadTexture('../../image/timg.jpeg');
+        let mat = new THREE.MeshBasicMaterial()
+        mat.map = texture;
+        let mesh = new THREE.Mesh(geometry,mat);
+        scene.add(mesh)
         //  加载成功回调
-            (texture) => {
-                let material = new THREE.MeshBasicMaterial({
-                    map:texture,
-                })
-                let mesh = new  THREE.Mesh(geometry,material);
-                scene.add(mesh)
-
-            }, 
-            //  加载过程中 - 现在版本好像不支持了
-            undefined, 
-            //  加载错误
-            (err) => {
-                console.log(err);
-            })
+          
     }
     function render() {
         requestAnimationFrame(render);

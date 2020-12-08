@@ -20,6 +20,13 @@
 </html>
 <script src="../../node_modules/three/build/three.min.js"></script>
 <script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../node_modules/three/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="../../node_modules/three/examples/js/postprocessing/MaskPass.js"></script>
+<script src="../../node_modules/three/examples/js/postprocessing/RenderPass.js"></script>
+<script src="../../node_modules/three/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="../../node_modules/three/examples/js/postprocessing/FilmPass.js"></script>
+<script src="../../node_modules/three/examples/js/shaders/CopyShader.js"></script>
+<script src="../../node_modules/three/examples/js/shaders/FilmShader.js"></script>
 <script>
     let scene,
         camera,
@@ -36,30 +43,23 @@
         camera.position.z = 50;
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(innerWidth, innerHeight);
-        renderer.setClearColor(0xcccccc);
-        let axes = new THREE.AxesHelper();
+        renderer.setClearColor(0x000000);
+
+        let axes = new THREE.AxesHelper(20);
         scene.add(axes)
+        
         document.body.appendChild(renderer.domElement)
         new THREE.OrbitControls(camera, renderer.domElement)
     }
     function box() {
-        let geometry = new THREE.BoxGeometry(10, 10, 10);
-        let texture = new THREE.TextureLoader().load('../../image/timg.jpeg',
-        //  加载成功回调
-            (texture) => {
-                let material = new THREE.MeshBasicMaterial({
-                    map:texture,
-                })
-                let mesh = new  THREE.Mesh(geometry,material);
-                scene.add(mesh)
-
-            }, 
-            //  加载过程中 - 现在版本好像不支持了
-            undefined, 
-            //  加载错误
-            (err) => {
-                console.log(err);
-            })
+    }
+    function light(){
+        let ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+        scene.add(ambientLight);
+ 
+        let directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
     }
     function render() {
         requestAnimationFrame(render);
@@ -68,6 +68,7 @@
     function load() {
         init();
         box();
+        light();
         render()
     }
     window.onload = function () {

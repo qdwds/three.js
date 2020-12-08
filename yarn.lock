@@ -23,3 +23,8 @@ three@*, three@^0.123.0:
   version "0.123.0"
   resolved "https://registry.npm.taobao.org/three/download/three-0.123.0.tgz#3bb6d8f908a432eb7cd450f7eab6dd40fde53085"
   integrity sha1-O7bY+QikMut81FD36rbdQP3lMIU=
+
+tween@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.npm.taobao.org/tween/download/tween-0.9.0.tgz#f856c7a9c9ab85ca9a2bc02282591aa2513a20ed"
+  integrity sha1-+FbHqcmrhcqaK8AiglkaolE6IO0=

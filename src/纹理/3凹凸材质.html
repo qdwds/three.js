@@ -37,37 +37,55 @@
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(innerWidth, innerHeight);
         renderer.setClearColor(0xcccccc);
-        let axes = new THREE.AxesHelper();
+
+        let axes = new THREE.AxesHelper(20);
         scene.add(axes)
+        
         document.body.appendChild(renderer.domElement)
         new THREE.OrbitControls(camera, renderer.domElement)
     }
     function box() {
-        let geometry = new THREE.BoxGeometry(10, 10, 10);
-        let texture = new THREE.TextureLoader().load('../../image/timg.jpeg',
-        //  加载成功回调
-            (texture) => {
-                let material = new THREE.MeshBasicMaterial({
-                    map:texture,
-                })
-                let mesh = new  THREE.Mesh(geometry,material);
-                scene.add(mesh)
+        let texturer = new THREE.TextureLoader().load('../../image/stone.jpg');
 
-            }, 
-            //  加载过程中 - 现在版本好像不支持了
-            undefined, 
-            //  加载错误
-            (err) => {
-                console.log(err);
-            })
+        let geometry1 = new THREE.BoxGeometry(10, 10, 10);
+        let mat1 = new THREE.MeshBasicMaterial();
+        mat1.map = texturer
+        let mesh1 = new THREE.Mesh(geometry1, mat1)
+        mesh1.position.x = -10
+
+        let geometry2 = new THREE.BoxGeometry(10, 10, 10);
+        let mat2 = new THREE.MeshPhongMaterial({
+            map: texturer,
+            bumpScale: 0.2,
+            bumpMap: new THREE.TextureLoader().load('../../image/stone-bump.jpg'),
+
+        });
+        let mesh2 = new THREE.Mesh(geometry2, mat2)
+        mesh2.position.x = 10
+        mesh2.name = 'mesh2'
+        let group = new THREE.Group();
+        group.add(mesh1);
+        group.add(mesh2);
+        scene.add(group)
+    }
+    function light(){
+        let ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+        scene.add(ambientLight);
+ 
+        let directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
     }
     function render() {
         requestAnimationFrame(render);
+        scene.getObjectByName('mesh2').rotation.x += 0.01
+        scene.getObjectByName('mesh2').rotateY(0.02)
         renderer.render(scene, camera);
     }
     function load() {
         init();
         box();
+        light();
         render()
     }
     window.onload = function () {
