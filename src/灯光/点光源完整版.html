@@ -14,7 +14,7 @@
 </head>
 
 <body onload="init()">
-
+    PointLight 点光源
 </body>
 
 </html>
@@ -30,53 +30,62 @@
         boxBg = null
     config = {
         color: `#404040`,
-        x:0,
-        y:0,
-        z:0,
-        s:0.1234
+        x: 10,
+        y: 20,
+        z: 10,
+        s: 1
     }
 
 
     function createinit() {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-        // camera.position.set(-30, 40, 30);
-        camera.position.z = 30;
+        camera.position.z = 70;
         camera.position.y = 1;
 
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(new THREE.Color(0xffffff))
+        renderer.setClearColor(new THREE.Color(0x000000))
+        console.log(renderer);
+        renderer.shadowMapEnabled = true;
+
+        //  平板
+        let planeGeometry = new THREE.PlaneGeometry(60, 40);
+        let planeMaterial = new THREE.MeshLambertMaterial({
+            color: 0xcccccc,
+            side: THREE.DoubleSide
+        })
+        let plane = new THREE.Mesh(planeGeometry, planeMaterial)
+        plane.rotation.x = -Math.PI / 2.4;
+        plane.receiveShadow = true; //  平板可以展示光源
+        scene.add(plane)
 
         new THREE.OrbitControls(camera, renderer.domElement);
-
-        // MeshBasicMaterial    这个不透光~~~~~~
-        let planeGeometry = new THREE.PlaneGeometry(60, 40);
-        let planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff ,side:THREE.DoubleSide})
-        let plane = new THREE.Mesh(planeGeometry, planeMaterial)
-        scene.add(plane)
-        plane.rotation.x = -0.5 * Math.PI;
-        plane.position.set(15, 0, 0);
-        
         document.body.appendChild(renderer.domElement);
         let axes = new THREE.AxesHelper(20);
         scene.add(axes)
-        // let c = new THREE.AmbientLight(0xffffff,10)
-        // scene.add(c)
-        //  设置方向光
-        let light = new THREE.PointLight(0xffffff,1,1000,1);
-        light.position.set(config.x,config.y,config.z);
-        light.name = 'light'
-        scene.add(light)
 
     }
+    function lightFun() {
+        //  环境光
+        ambientLight = new THREE.AmbientLight(0xffffff, 1); // soft white light
+        scene.add(ambientLight);
 
+        //  设置方向光
+        let light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(config.x, config.y, config.z);
+        light.name = 'light'
+        light.castShadow = true;
+        scene.add(light)
+    }
     function box() {
         let box = new THREE.BoxGeometry(10, 10, 10);
-        boxBg = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        boxBg = new THREE.MeshLambertMaterial({
+            color: 0x00ff00
+        });
         let mesh = new THREE.Mesh(box, boxBg);
-        mesh.position.y += 10;
-        console.log(mesh);
+        mesh.position.y += 6;
+        mesh.castShadow = true; //  几何体开启光以源
         scene.add(mesh)
     }
     function configGui() {
@@ -84,18 +93,30 @@
         gui.addColor(config, 'color').onChange(e => {
             scene.getObjectByName('light').color = new THREE.Color(e)
         })
-        gui.add(config,'x',0,1000).onChange(_=>{
+        gui.add(config, 'x', -50, 50).onChange(_ => {
             scene.getObjectByName('light').position.x = _;
+            scene.getObjectByName('sphere').position.x = _;
         });
-        gui.add(config,'y',0,1000).onChange(_=>{
+        gui.add(config, 'y', 0, 100).onChange(_ => {
             scene.getObjectByName('light').position.y = _;
+            scene.getObjectByName('sphere').position.y = _;
         });
-        gui.add(config,'z',0,1000).onChange(_=>{
+        gui.add(config, 'z', 0, 100).onChange(_ => {
             scene.getObjectByName('light').position.z = _;
+            scene.getObjectByName('sphere').position.z = _;
         });
-       
+
     }
 
+    function sphere() {
+        const geometry = new THREE.SphereGeometry(1, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.name = 'sphere';
+        sphere.position.y = 40;
+        sphere.position.x = config.x;
+        scene.add(sphere);
+    }
     function render() {
         requestAnimationFrame(() => render());
         renderer.render(scene, camera)
@@ -104,6 +125,8 @@
     function init() {
         createinit();
         box()
+        lightFun();
+        sphere();
         render();
         configGui();
     }

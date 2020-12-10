@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    动画有积累 有时间在处理
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        gltModule,
+        animationMixer,
+        clock;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 20;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xcccccc);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+        //  环境灯
+        let light = new THREE.AmbientLight(
+            0xffffff,
+            1)
+        scene.add(light)
+
+        //  按下事件
+        window.addEventListener('keydown', events);
+
+        clock = new THREE.Clock()
+    }
+    function grid() {
+        let grid = new THREE.GridHelper(10, 10);
+        scene.add(grid)
+    }
+    function axes() {
+        animationMixer = new THREE.AnimationMixer(scene)
+        let glt = new THREE.GLTFLoader();
+        glt.load('../../models/preson.glb', (glt => {
+            console.log(glt);
+            gltModule = glt
+            scene.add(glt.scene)
+            console.log(scene.getObjectByName);
+        }))
+
+    }
+    function render() {
+        requestAnimationFrame(render);
+        animationMixer.update(clock.getDelta())
+        renderer.render(scene, camera);
+    }
+    function events(e) {
+        switch (e.keyCode) {
+            case 37:
+                animationGLT('Idle');
+                break;
+            case 38:
+                animationGLT("Run");
+                break;
+            case 39:
+                animationGLT("TPose");
+                break;
+            case 40:
+                animationGLT("Walk");
+                break;
+        }
+    }
+    function animationGLT(name) {
+        let animations = gltModule.animations.find(animation => animation.name === name)
+        let action = animationMixer.clipAction(animations);
+        action.play()
+    }
+    function init() {
+        createInit();
+        axes();
+        grid()
+        render();
+    }
+    window.onload = function () {
+        init();
+    }
+</script>

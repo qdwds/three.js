@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        config = {
+            x: 19,
+            y: 30,
+            z: 21,
+            s: 1,//  光照强度
+            distance: 100,    //光源发射的最大距离
+            angle: 2,  //  光射角度   
+            penumbra: 25, //  灯光的衰减度
+            decay: 0,    //  沿着光照距离的衰减量
+        }
+
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+
+        camera.position.z = 70;
+        camera.position.y = 70;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xcccccf);
+        document.body.appendChild(renderer.domElement);
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    function light() {
+        let spot = new THREE.SpotLight(
+            0x00ff00,
+            config.s,
+            config.distance,
+            Math.PI / 6,
+            config.penumbra,
+            config.decay
+        );
+        spot.position.set(config.x, config.y, config.z);
+        // var spot = new THREE.SpotLight(0xffff00, 1, 100, Math.PI / 6, 25);
+        // spot.position.set(2, 5, 3);
+        spot.castShadow = true;
+        spot.name = 'spot'
+        scene.add(spot)
+        //  灯光的辅助对象
+        const spotLightHelper = new THREE.SpotLightHelper(spot, 0x00ff00);
+        scene.add(spotLightHelper);
+        console.log(spotLightHelper);
+    }
+    function planeMesh() {
+        let plane = new THREE.PlaneGeometry(60, 60);
+        let mate = new THREE.MeshLambertMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide
+        })
+        let mesh = new THREE.Mesh(plane, mate);
+        mesh.receiveShadow = true;
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.y = -1;
+        scene.add(mesh)
+    }
+    function box() {
+        let box = new THREE.BoxGeometry(10, 10, 10);
+        let mate = new THREE.MeshLambertMaterial({
+
+        });
+        let mesh = new THREE.Mesh(box, mate);
+        mesh.position.y = 10;
+        mesh.castShadow = true;
+        scene.add(mesh);
+    }
+    function gui() {
+        let gui = new dat.GUI();
+        console.log(scene.getObjectByName('spot'));
+        gui.add(config, 'x', 0, 100).onChange(e => {
+            scene.getObjectByName('spot').position.x = e
+        })
+        gui.add(config, 'y', 0, 100).onChange(e => {
+            scene.getObjectByName('spot').position.y = e
+        })
+        gui.add(config, 'z', 0, 100).onChange(e => {
+            scene.getObjectByName('spot').position.z = e
+        })
+
+        gui.add(config, 's', 0, 2).name('光照强度').onChange(e => {
+            scene.getObjectByName('spot').intensity = e
+        })
+        gui.add(config, 'distance', 0, 100).name('光源距离').onChange(e => {
+            console.log( scene.getObjectByName('spot').distance);
+            scene.getObjectByName('spot').distance = e
+        })
+        gui.add(config, 'angle', -2, 10).name('光散角度').onChange(e => {
+            scene.getObjectByName('spot').angle = e
+        })
+        gui.add(config, 'penumbra', 0, 1).name('聚光锥的半影衰减百分比').onChange(e => {
+            scene.getObjectByName('spot').penumbra = e
+        })
+        gui.add(config, 'decay', 0, 2).name('衰减量').onChange(e => {
+            scene.getObjectByName('spot').decay = e
+        })
+
+    }
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+    }
+    window.onload = function () {
+        init();
+        light();
+        planeMesh();
+        box();
+        gui();
+        render();
+
+    }
+</script>
