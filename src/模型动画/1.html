@@ -59,10 +59,8 @@
         animationMixer = new THREE.AnimationMixer(scene)
         let glt = new THREE.GLTFLoader();
         glt.load('../../models/preson.glb', (glt => {
-            console.log(glt);
             gltModule = glt
             scene.add(glt.scene)
-            console.log(scene.getObjectByName);
         }))
 
     }

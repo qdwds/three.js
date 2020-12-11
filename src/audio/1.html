@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/PLYLoader.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        analyser;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 500;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    function audio() {
+        //  创建音频 添加到摄像机
+        let listener = new THREE.AudioListener();
+        camera.add(listener);
+        //  创建音频源
+        const sound = new THREE.Audio(listener);
+        // load a sound and set it as the Audio object's buffer
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('../../audio/laola.mp3', function (buffer) {
+            console.log(buffer);
+            sound.setBuffer(buffer);
+            sound.setLoop(true);
+            sound.setVolume(0.5);
+            sound.play();
+        });
+
+        // create an AudioAnalyser, passing in the sound and desired fftSize
+        analyser = new THREE.AudioAnalyser(sound, 32);
+
+    }
+    function box(x=0){
+        let mesh = new  THREE.Mesh(
+            new THREE.BoxGeometry(10,10,10),
+            new THREE.MeshBasicMaterial({
+                color:0x00ff00
+            })
+        )
+        mesh.name = 'mesh';
+        mesh.position.x =x
+        scene.add(mesh)
+    }
+    function render() {
+        requestAnimationFrame(render);
+        console.log();
+        let y = analyser.getAverageFrequency();
+        let mesh = scene.getObjectByName('mesh')
+        if(y){
+            mesh.position.y = y
+        }else{
+            mesh.position.y = 0;
+        }
+        renderer.render(scene, camera);
+    }
+    function init() {
+        createInit();
+        audio();
+        box();
+        render();
+    }
+    window.onload = function () {
+        init();
+    }
+</script>
