@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+      
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.min.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene, camera, renderer, portalLight, clock, portalParticles = [], smokeParticles = []
+
+    function init() {
+        scene = new THREE.Scene();
+        sceneLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        sceneLight.position.set(0, 0, 1);
+        scene.add(sceneLight)
+
+        /// 灯光 特别好看
+        portalLight = new THREE.PointLight(0x062d89, 30, 350, 1.7);
+        portalLight.position.set(0, 0, 250);
+        scene.add(portalLight);
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 1000;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+    function render() {
+        let delta = clock.getDelta();
+        portalParticles.forEach(p => {
+            p.rotation.z -= delta * 1.5
+        });
+
+        smokeParticles.forEach(p => {
+            p.rotation.z -= delta * 0.2
+        });
+        requestAnimationFrame(render);
+        renderer.render(scene, camera)
+    }
+    function box() {
+        let loader = new THREE.TextureLoader();
+
+        loader.load('../../image/cq.jpg', (texture) => {
+            portalGeo = new THREE.PlaneBufferGeometry(350, 350);
+            protalMaterial = new THREE.MeshStandardMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide
+            })
+
+            smokeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
+            smokeMaterial = new THREE.MeshStandardMaterial({
+                map: texture,
+                transparent: true,
+                side: 2
+            })
+            let particle = new THREE.Mesh(
+                portalGeo,
+                protalMaterial
+            )
+
+            for (let p = 300; p > 250; p--) {
+                let particle = new THREE.Mesh(portalGeo, protalMaterial);
+                particle.position.set(
+                    0.5 * p * Math.cos((4 * p * Math.PI) / 180),
+                    0.5 * p * Math.cos((4 * p * Math.PI) / 180),
+                    0.1 * p
+                )
+                particle.rotation.z = Math.random() * 360;
+                portalParticles.push(particle)
+                scene.add(particle)
+            }
+
+            // for (let p = 0; p > 40; p++) {
+            //     let particle = new THREE.Mesh(smokeGeo, smokeMaterial);
+            //     particle.position.set(
+            //        Math.random () * 1000 - 500,
+            //        Math.random () * 1000 - 200,
+            //        25
+            //     )
+            //     particle.rotation.z = Math.random() * 360;
+            //     particle.metarial.opacity = 0.4
+            //     portalParticles.push(particle)
+            //     scene.add(particle)
+            // }
+            clock = new THREE.Clock();
+            render()
+        })
+    }
+    window.onload = function () {
+        init();
+        box();
+    }
+</script>

@@ -20,11 +20,13 @@
 </html>
 <script src="../../node_modules/stats.js/build/stats.min.js"></script>
 <script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
 <script>
     class Init {
         constructor() {
             this.planeGeometry = null;
             this.scene = new THREE.Scene();
+            this.scene.fog = new THREE.FogExp2(0x050505, 0.015);
             this.camera = new THREE.PerspectiveCamera(
                 45,
                 window.innerWidth / window.innerHeight,
@@ -36,11 +38,13 @@
             this.scene.add(this.camera);
             this.renderer = new THREE.WebGLRenderer();
             this.renderer.setSize(window.innerWidth, window.innerHeight)
-            this.renderer.setClearColor(new THREE.Color(0x000000))
+            this.renderer.setClearColor(new THREE.Color(0xffffff))
             document.body.appendChild(this.renderer.domElement);
             this.renderer.render(this.scene, this.camera)
             this.light()
             this.render()
+            new THREE.OrbitControls(this.camera,this.renderer.domElement)
+
         }
         // 添加平面
         plane() {

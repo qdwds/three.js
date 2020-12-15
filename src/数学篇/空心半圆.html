@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth,innerHeight);
+        renderer.setClearColor(0xcccccc);
+        console.log(renderer);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera,renderer.domElement)
+    }
+    function axes(){
+        let axes = new THREE.AxesHelper(20);
+        scene.add(axes)
+    }
+    function shape(){
+        // 使用贝塞尔曲线
+        const circleRadius = 10;    //  起点
+        const circleShape = new THREE.Shape();
+        circleShape.moveTo(circleRadius,0);
+        // quadraticCurveTo    二次贝塞尔曲线
+        circleShape.quadraticCurveTo(0,circleRadius,-circleRadius,0);
+
+
+        const points = circleShape.createPointsGeometry(5);
+
+        const line = new THREE.Line(
+            points,
+            new THREE.LineBasicMaterial({
+                color:0xff0000
+            })
+        );
+        line.position.set(0,0,0-25);
+        line.rotation.set(0,0,0);
+        line.scale.set(1,1,1);
+        scene.add(line);
+    }
+    function render(){
+        requestAnimationFrame(render);
+        renderer.render(scene,camera);
+    }
+    function init() {
+        createInit();
+        axes();
+        shape();
+        render();
+    }
+    window.onload = function (){
+        init();
+    }
+</script>
