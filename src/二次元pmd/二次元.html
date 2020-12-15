@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../js/ammo.js"></script>
+
+<script type="module">
+    import * as THREE from "../../node_modules/three/build/three.module.js";
+    import { MMDLoader } from '../../node_modules/three/examples/jsm/loaders/MMDLoader.js'
+    import { OrbitControls } from "../../node_modules/three/examples/jsm/controls/OrbitControls.js";
+    import { MMDAnimationHelper } from "../../node_modules/three/examples/jsm/animation/MMDAnimationHelper.js";
+    import { OutlineEffect } from "../../node_modules/three/examples/jsm/effects/OutlineEffect.js";
+    let scene,
+        camera,
+        renderer,
+        helper,
+        clock,
+        ready = false,
+        config = {
+            x: 12,
+            y: 22,
+            z: 2
+        };
+
+    Ammo().then(function (AmmoLib) {
+        Ammo = AmmoLib;
+        init();
+        loader();
+        light();
+        render();
+
+    });
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x00000);
+        renderer.shadowMap.enabled = true;   //  投影
+
+        document.body.appendChild(renderer.domElement)
+        clock = new THREE.Clock();
+        //  平板
+        const circle = new THREE.Mesh(
+            new THREE.CircleBufferGeometry(50, 50),
+            new THREE.MeshLambertMaterial({
+                color: 0xaaaaaa,
+                side: 2,
+            }));
+
+        circle.receiveShadow = true;
+        circle.rotation.x = -0.5 * Math.PI;
+        scene.add(circle);
+    }
+    function loader() {
+        helper = new MMDAnimationHelper({
+            afterglow: 2.0
+        });
+        let mmd = new MMDLoader();
+        //  调用模型
+        mmd.loadWithAnimation('../../models/miku_v2.pmd', ['../../models/wavefile_v2.vmd'], (m) => {
+            let mesh = m.mesh;
+            mesh.castShadow = true; //  模型投影
+            helper.add(m.mesh, {
+                animation: m.animation,
+                physics: false,
+            });
+            //  调用相机
+            mmd.loadAnimation('../../models/wavefile_camera.vmd', camera, (cam) => {
+                helper.add(camera, {
+                    animation: cam
+                });
+                audio(mesh)
+            })
+        },down)
+    }
+    function light() {
+        //  环境光
+        scene.add(new THREE.AmbientLight(0x666666, 1));
+
+        let point = new THREE.SpotLight(0x666666, 1, 1000);
+        point.position.set(12, 22, 2);
+        point.castShadow = true;    //  投影
+        scene.add(point)
+    }
+    function audio(mesh) {
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        //  加载声音并将其设置为Audio对象的缓冲区 
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('../../audio/wavefile_short.mp3', function (buffer) {
+            const audio = new THREE.Audio(listener).setBuffer(buffer);
+            helper.add(audio, { delayTime: 160 * 1 / 30 });
+            scene.add(mesh);
+            ready = true
+        });
+    }
+    function down(xhr) {
+        if (xhr.lengthComputable) {
+            const p = xhr.loaded / xhr.total * 100;
+            console.log(`download ${Math.round(p, 2)}%`);
+        }
+    }
+
+    function render() {
+        requestAnimationFrame(render);
+        if (ready) {
+            helper.update(clock.getDelta());
+        }
+        renderer.render(scene, camera);
+    }
+
+</script>

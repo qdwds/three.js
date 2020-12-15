@@ -10,6 +10,11 @@
             padding: 0;
             margin: 0;
         }
+        body{
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
@@ -18,13 +23,14 @@
 </body>
 
 </html>
-<script src="../../node_modules/three/build/three.js"></script>
-<script src="../../node_modules/three/examples/js/loaders/PLYLoader.js"></script>
-<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../node_modules/three/build/three.js"></script>
+<script src="../node_modules/three/examples/js/loaders/PLYLoader.js"></script>
+<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
 <script>
     let scene,
         camera,
         renderer,
+        mouse,
         config = {
             x: 30,
             y: 20,
@@ -41,7 +47,7 @@
         renderer.shadowMapEnabled = true;   // 渲染阴影
         renderer.setClearColor(0x000000);
         document.body.appendChild(renderer.domElement)
-
+        mouse = new THREE.Vector2();
         new THREE.OrbitControls(camera, renderer.domElement)
     }
     function plane() {
@@ -55,68 +61,37 @@
         mesh.rotation.x = -0.5 * Math.PI;
         scene.add(mesh)
     }
-    function box() {
-        const box = new THREE.Mesh(
-            new THREE.BoxGeometry(10, 10, 10),
-            new THREE.MeshLambertMaterial({
-                color: 0xff0000
-            })
-        )
-        box.position.y = 10;
-        box.name = 'box';
-        box.castShadow = true;
 
-
-        const cone = new THREE.Mesh(
-            new THREE.ConeGeometry(5, 20, 32),
-            new THREE.MeshLambertMaterial({ color: 0xffff00 })
-        );
-        cone.position.y = 10;
-        cone.position.x = 20;
-        cone.castShadow = true;
-
-        let group = new THREE.Group();
-
-
-        group.add(box)
-        group.add(cone)
-        scene.add(group)
-    }
     function light() {
         let ambient = new THREE.AmbientLight(0xffffff, 1);
         scene.add(ambient)
 
-        let point = new THREE.PointLight(0xffffff, 1, 1000);
+        let point = new THREE.PointLight(0x0FF000, 1, 1000);
         point.position.set(
             config.x,
             config.y,
             config.z);
         point.castShadow = true;
         scene.add(point)
-
-
-        const circle = new THREE.Mesh(
-            new THREE.CircleGeometry(2, 32,10),
-            new THREE.MeshBasicMaterial({ color: 0xffffff })
-        );
-        circle.position.y = 40;
-        circle.position.x = config.x;
-        scene.add(circle);
     }
     function render() {
         requestAnimationFrame(render);
-        let box = scene.getObjectByName('box');
-        box.rotateX(0.01)
-        box.rotateY(0.01)
-        box.rotateZ(0.01)
         renderer.render(scene, camera);
     }
-
+    function evFun(event) {
+        let s = document.createElement('p');
+        s.style.position = 'absolute';
+        s.style.top = `${event.clientY}px`;
+        s.style.left = `${event.clientX}px`;
+        s.style.border = `1px solid red`;
+        s.innerHTML = 'TEST';
+        document.body.appendChild(s)
+    }
     window.onload = function () {
         init();
         plane();
-        box();
         light();
         render();
+        window.addEventListener('click', evFun)
     }
 </script>

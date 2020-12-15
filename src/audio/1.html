@@ -71,7 +71,6 @@
     }
     function render() {
         requestAnimationFrame(render);
-        console.log();
         let y = analyser.getAverageFrequency();
         let mesh = scene.getObjectByName('mesh')
         if(y){
