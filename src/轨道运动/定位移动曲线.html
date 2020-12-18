@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene, camera, renderer, curve;
+
+    function init() {
+        scene = new THREE.Scene;
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 400;
+
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+        renderer.setClearColor(0x00000f);
+        renderer.setSize(innerWidth, innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 1))
+    }
+    function box() {
+        scene.add(new THREE.AxesHelper(120))
+
+        curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-20, -50, 10),
+            new THREE.Vector3(-60, 90, 0),
+            new THREE.Vector3(70, 10, 40),
+            new THREE.Vector3(80, -40, 20),
+            new THREE.Vector3(-60, 20, -10),
+        ]);
+
+        let tubeGeometry = new THREE.TubeGeometry(curve, 100, 0.6, 50);
+        let textureLoader = new THREE.TextureLoader();
+        let texture = textureLoader.load('../../image/cq.jpg');
+
+        let tubeMaterial = new THREE.MeshPhongMaterial({
+            map: texture,
+            transparent: true
+        })
+        let mesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+        scene.add(mesh)
+
+        //  移动源
+        let boxMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(5, 5, 5),
+            new THREE.MeshLambertMaterial({
+                color: 0xfff000
+            })
+        )
+        boxMesh.position.set(-80, -40, 0)
+        boxMesh.name = 'boxMesh'
+        scene.add(boxMesh)
+    }
+
+    let progress = 0;
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera)
+        console.log(progress);
+
+        progress += 0.009;
+        if (curve) {
+            //  应该是获取坐标；
+            let point = curve.getPoint(progress);
+            scene.getObjectByName('boxMesh').position.set(point.x, point.y, point.z);
+            console.log(point);
+        }
+    }
+
+    window.onload = function () {
+        init();
+        box();
+        render();
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+</script>
