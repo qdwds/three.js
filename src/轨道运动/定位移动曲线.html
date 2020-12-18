@@ -45,16 +45,16 @@
             new THREE.Vector3(-60, 90, 0),
             new THREE.Vector3(70, 10, 40),
             new THREE.Vector3(80, -40, 20),
-            new THREE.Vector3(-60, 20, -10),
         ]);
 
-        let tubeGeometry = new THREE.TubeGeometry(curve, 100, 0.6, 50);
+        let tubeGeometry = new THREE.TubeGeometry(curve, 100, 2, 50);
         let textureLoader = new THREE.TextureLoader();
         let texture = textureLoader.load('../../image/cq.jpg');
 
         let tubeMaterial = new THREE.MeshPhongMaterial({
             map: texture,
-            transparent: true
+            transparent: true,
+            side:THREE.DoubleSide
         })
         let mesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
         scene.add(mesh)
@@ -75,14 +75,13 @@
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera)
-        console.log(progress);
-
         progress += 0.009;
         if (curve) {
-            //  应该是获取坐标；
+            //  获取当前坐标
             let point = curve.getPoint(progress);
+            //  给需要移动的物体设置当前移动的坐标
             scene.getObjectByName('boxMesh').position.set(point.x, point.y, point.z);
-            console.log(point);
+            // camera.position.set(point.x + 5, point.y + 5, point.z + 5)
         }
     }
 
