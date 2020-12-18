@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer,
+        gltModule,
+        animationMixer,
+        clock;
+
+    function createInit() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.02, 1000);
+        camera.position.z = 20;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xcccccc);
+        document.body.appendChild(renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+        //  环境灯
+        let light = new THREE.AmbientLight(
+            0xffffff,
+            1)
+        scene.add(light)
+
+        clock = new THREE.Clock()
+    }
+    function grid() {
+        let grid = new THREE.GridHelper(10, 10);
+        scene.add(grid)
+    }
+    function axes() {
+        animationMixer = new THREE.AnimationMixer(scene)
+        let glt = new THREE.GLTFLoader();
+        glt.load('../../models/pivot_demo_journey/scene.gltf', (glt => {
+            console.log(glt);
+       
+            glt.scene.scale.set(0.02,0.02,0.02);   
+            scene.add(glt.scene)
+        }))
+
+    }
+    function render() {
+        requestAnimationFrame(render);
+        animationMixer.update(clock.getDelta())
+        renderer.render(scene, camera);
+    }
+
+    function init() {
+        createInit();
+        axes();
+        grid()
+        render();
+    }
+    window.onload = function () {
+        init();
+    }
+</script>

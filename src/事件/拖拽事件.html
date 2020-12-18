@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script type="module">
+    import * as THREE from "../../node_modules/three/build/three.module.js";
+    import { OrbitControls } from "../../node_modules/three/examples/jsm/controls/OrbitControls.js";
+    import { DragControls } from "../../node_modules/three/examples/jsm/controls/DragControls.js";
+
+    let scene, camera, renderer, control;
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 80;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild(renderer.domElement);
+
+        // control = new OrbitControls(camera, renderer.domElement)
+        let l = new THREE.AmbientLight(0xffffff);
+        scene.add(l)
+    }
+    function box() {
+        //  第一个box
+        const geometry = new THREE.BoxGeometry(10, 10, 10);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        //  第二个box
+        const geometry2 = new THREE.BoxGeometry(10, 10, 10);
+        const material2 = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide
+        });
+        const sphere2 = new THREE.Mesh(geometry2, material2);
+        scene.add(sphere2);
+
+        const controls = new DragControls(
+            [sphere, sphere2],
+            camera, //  相机
+            renderer.domElement //  渲染
+        );
+
+        //  鼠标移入
+        controls.addEventListener('hoveron', function (event) {
+            event.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        });
+
+        //  鼠标离开
+        controls.addEventListener('hoveroff', function (event) {
+            event.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        });
+
+        //  鼠标按下准备移动
+        controls.addEventListener('dragstart', function (event) {
+            event.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        });
+
+        //  移动结束鼠标离开
+        controls.addEventListener('dragend', function (event) {
+            event.object.material.color = new THREE.Color(Math.random() * 0xffffff)
+        });
+    }
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera)
+    }
+    window.onload = function () {
+        init();
+        box();
+        render();
+    }
+
+
+</script>

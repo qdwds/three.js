@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script type="module">
+    import * as THREE from "../../node_modules/three/build/three.module.js";
+    import { OrbitControls } from "../../node_modules/three/examples/jsm/controls/OrbitControls.js";
+
+    let scene, camera, renderer,control;
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 10000);
+        camera.position.z = 30;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild(renderer.domElement);
+
+        control = new OrbitControls(camera, renderer.domElement)
+        // control.autoRotate =true;
+        control.maxDistance = 980   //  最大半径
+        let l = new THREE.AmbientLight(0xffffff);
+        scene.add(l)
+    }
+    function box() {
+        const geometry = new THREE.SphereGeometry(1000, 32, 32);
+        let texture = new THREE.TextureLoader().load('../../image/vr.jpg')
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            map: texture,
+            side: THREE.DoubleSide
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+    }
+    function render() {
+        requestAnimationFrame(render);
+        // control.update()
+        renderer.render(scene, camera)
+    }
+    window.onload = function () {
+        init();
+        box();
+        render();
+    }
+
+
+</script>
