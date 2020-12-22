@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../node_modules/three/examples/js/geometries/ConvexGeometry.js"></script>
+<script src="../../node_modules/three/examples/js/math/ConvexHull.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer
+    function createScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 100;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x00001f);
+        document.body.appendChild(renderer.domElement);
+    }
+    function light() {
+        let axes = new THREE.AxesHelper()
+        scene.add(axes)
+    }
+    function render() {
+        requestAnimationFrame(render)
+        renderer.render(scene, camera)
+    }
+    function box() {
+        const points = [];
+        //  创建20个随机点
+        for (let i = 0; i < 20; i++) {
+            let x = Math.random() * 20;
+            let y = Math.random() * 20;
+            let z = Math.random() * 20;
+            points.push(
+                new THREE.Vector3(x, y, z)
+            );
+        }
+
+
+
+        let s = new THREE.Object3D();
+        let material = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            transparent: false
+        })
+        points.forEach(e => {
+            let g = new THREE.SphereGeometry(0.2);
+            let m = new THREE.Mesh(
+                g, material
+            );
+            m.position.copy(e);
+            s.add()
+        })
+        scene.add(s)
+        let convexGeometry = new THREE.ConvexGeometry(points);
+        convexGeometry.computeVertexNormals();
+        convexGeometry.computeFaceNormals();
+        convexGeometry.normalsNeedUpdate = true
+        scene.add(convexGeometry)
+
+
+    }
+    function init() {
+        createScene();
+        light()
+        box();
+        render()
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+</script>
