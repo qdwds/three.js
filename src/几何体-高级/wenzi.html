@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../node_modules/three/examples/js/geometries/ConvexGeometry.js"></script>
+<script src="../../node_modules/three/examples/js/math/ConvexHull.js"></script>
+<script>
+    let scene,
+        camera,
+        renderer
+    function createScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 100;
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x00001f);
+        document.body.appendChild(renderer.domElement);
+    }
+    function light() {
+        let axes = new THREE.AxesHelper()
+        scene.add(axes)
+    }
+    function render() {
+        requestAnimationFrame(render)
+        renderer.render(scene, camera)
+    }
+    function box() {
+
+
+
+    }
+    function init() {
+        createScene();
+        light()
+        box();
+        render()
+        new THREE.OrbitControls(camera, renderer.domElement)
+    }
+</script>
