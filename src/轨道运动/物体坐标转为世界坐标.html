@@ -10,6 +10,9 @@
             padding: 0;
             margin: 0;
         }
+        body{
+            position: relative;
+        }
 
         div {
             position: absolute;
@@ -40,7 +43,7 @@
         // camera.position.y = 100
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(innerWidth, innerHeight);
-        renderer.setClearColor(0x00000f);
+        renderer.setClearColor(0xffffff);
         document.body.appendChild(renderer.domElement);
         scene.add(
             new THREE.AxesHelper(120)
@@ -54,7 +57,8 @@
 
     }
     function LightMesh(start = { x: 100, y: 0 }, end = { x: -100, y: 0 }) {
-        console.log(start,end);
+        console.log(start);
+        console.log(end);
         curve = new THREE.CubicBezierCurve(
             new THREE.Vector2(start.x, start.y),  //  起点
             new THREE.Vector2(random(), random()),
@@ -97,13 +101,13 @@
         mesh.position.set(100, -20, 0)
         scene.add(mesh)
     }
-    
-    function sphere(){
-        let s = new THREE.SphereGeometry(1,10,20);
+
+    function sphere() {
+        let s = new THREE.SphereGeometry(1, 10, 20);
         let m = new THREE.MeshBasicMaterial({
-            color:0x00ff00
+            color: 0x00ff00
         });
-        let mesh = new THREE.Mesh(s,m);
+        let mesh = new THREE.Mesh(s, m);
         mesh.position.set(-100, -20, 0);
         mesh.name = 'sphere'
         scene.add(mesh)
@@ -112,18 +116,16 @@
     function random() {
         return Math.random() * 100
     }
-    
+
     let progress = 0;
     function render() {
         requestAnimationFrame(render)
         renderer.render(scene, camera)
-        progress+= 0.01;
-        // console.log(scene.getObjectByName('sphere'));
-        if(progress >= 1) return 
-        if(curve && scene.getObjectByName('sphere')){
+        progress += 0.01;
+        if (progress >= 1) return
+        if (curve && scene.getObjectByName('sphere')) {
             let points = curve.getPoint(progress);
-            console.log(points);
-            scene.getObjectByName('sphere').position.set(points.x,points.y,points.z)
+            scene.getObjectByName('sphere').position.set(points.x, points.y, points.z)
         }
     }
     window.onload = function () {
@@ -136,41 +138,34 @@
             click_Window('box2'),
         )
         render();
-        // click_Window('sphere')
-        
     }
 
     function click_Window(name) {
-        console.log(name);
-        console.log(
-            scene.getObjectByName(name)
-        );
-        let chooseMesh = scene.getObjectByName(name)
+        let chooseMesh = scene.getObjectByName(name);
+        var worldVector
         if (chooseMesh) {
-            var worldVector = new THREE.Vector3(
+            worldVector = new THREE.Vector3(
                 chooseMesh.position.x,
                 chooseMesh.position.y,
                 chooseMesh.position.z
             );
 
-            return worldVector
             // -TODO
 
-            待测试
-            //     var offsetx = $("#3dcontainer").offset();
-            //     var boxwidth =  $(".leftline").width()
-            //     var boxheight = $(".pop_windows").height() + $(".leftline").height()
-            //     var standardVector = worldVector.project(camera); //世界坐标转标准设备坐标  使用所传入的摄像机来投影（projects）该向量。
-            //     var a = ($('#3dcontainer').width()) / 2;
-            //     var b = ($('#3dcontainer').height()) / 2;
-            //     var x = Math.round(standardVector.x * a + a + offsetx.left + boxwidth); //标准设备坐标转屏幕坐标 + 左偏移的尺寸 + 盒子的宽度
-            //     var y = Math.round(-standardVector.y * b + b + offsetx.top - boxheight ); //标准设备坐标转屏幕坐标
-
-            //     $('.pop_windows').css({
-            //       "display": "block",
-            //       "left": x ,
-            //       "top": y 
-            //     });
+                var standardVector = worldVector.project(camera);//世界坐标转标准设备坐标
+            var a = window.innerWidth / 2;
+            var b = window.innerHeight / 2;
+            var x = Math.round(standardVector.x * a + a);//标准设备坐标转屏幕坐标
+            var y = Math.round(-standardVector.y * b + b);//标准设备坐标转屏幕坐标
+            let div = document.createElement('p');
+            div.innerHTML = 'xxxxxxxx';
+            div.style.position = 'absolute';
+            div.style.top = x+'px';
+            div.style.left = y+'px';
+            div.style.color = 'red'
+            document.body.appendChild(div)
+                console.log(div.style.top);
         }
+        return worldVector
     }
 </script>
