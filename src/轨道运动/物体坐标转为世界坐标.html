@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: wheat;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        二维三次贝尔曲线 动画没有自动闭合效果
+    </div>
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene, camera, renderer, curve;
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(465, innerWidth / innerHeight, 1, 1000);
+        camera.position.z = 100;
+        // camera.position.x = 100
+        // camera.position.y = 100
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x00000f);
+        document.body.appendChild(renderer.domElement);
+        scene.add(
+            new THREE.AxesHelper(120)
+        )
+
+        scene.add(
+            new THREE.AmbientLight(0xffffff, 1)
+        )
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+    }
+    function LightMesh(start = { x: 100, y: 0 }, end = { x: -100, y: 0 }) {
+        console.log(start,end);
+        curve = new THREE.CubicBezierCurve(
+            new THREE.Vector2(start.x, start.y),  //  起点
+            new THREE.Vector2(random(), random()),
+            new THREE.Vector2(random(), random()),
+            new THREE.Vector2(end.x, end.y),  // 终点
+        );
+
+        const points = curve.getPoints(50);  //  整条线分成多少份
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        const material = new THREE.LineBasicMaterial({
+            color: 0xff0000,
+            transparent: true,
+            opacity: 0.7
+        });
+        const curveObject = new THREE.Line(geometry, material);
+        scene.add(curveObject)
+
+    }
+
+    function box1() {
+        let mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 10, 10),
+            new THREE.MeshBasicMaterial({
+                color: 0xff00ff,
+            })
+        )
+        mesh.name = 'box1'
+        mesh.position.set(-100, -20, 0)
+        scene.add(mesh)
+    }
+    function box2() {
+        let mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 10, 10),
+            new THREE.MeshBasicMaterial({
+                color: 0xff00ff,
+            })
+        )
+        mesh.name = 'box2'
+        mesh.position.set(100, -20, 0)
+        scene.add(mesh)
+    }
+    
+    function sphere(){
+        let s = new THREE.SphereGeometry(1,10,20);
+        let m = new THREE.MeshBasicMaterial({
+            color:0x00ff00
+        });
+        let mesh = new THREE.Mesh(s,m);
+        mesh.position.set(-100, -20, 0);
+        mesh.name = 'sphere'
+        scene.add(mesh)
+    }
+
+    function random() {
+        return Math.random() * 100
+    }
+    
+    let progress = 0;
+    function render() {
+        requestAnimationFrame(render)
+        renderer.render(scene, camera)
+        progress+= 0.01;
+        // console.log(scene.getObjectByName('sphere'));
+        if(progress >= 1) return 
+        if(curve && scene.getObjectByName('sphere')){
+            let points = curve.getPoint(progress);
+            console.log(points);
+            scene.getObjectByName('sphere').position.set(points.x,points.y,points.z)
+        }
+    }
+    window.onload = function () {
+        init();
+        box1();
+        box2();
+        sphere();
+        LightMesh(
+            click_Window('box1'),
+            click_Window('box2'),
+        )
+        render();
+        // click_Window('sphere')
+        
+    }
+
+    function click_Window(name) {
+        console.log(name);
+        console.log(
+            scene.getObjectByName(name)
+        );
+        let chooseMesh = scene.getObjectByName(name)
+        if (chooseMesh) {
+            var worldVector = new THREE.Vector3(
+                chooseMesh.position.x,
+                chooseMesh.position.y,
+                chooseMesh.position.z
+            );
+
+            return worldVector
+            // -TODO
+
+            待测试
+            //     var offsetx = $("#3dcontainer").offset();
+            //     var boxwidth =  $(".leftline").width()
+            //     var boxheight = $(".pop_windows").height() + $(".leftline").height()
+            //     var standardVector = worldVector.project(camera); //世界坐标转标准设备坐标  使用所传入的摄像机来投影（projects）该向量。
+            //     var a = ($('#3dcontainer').width()) / 2;
+            //     var b = ($('#3dcontainer').height()) / 2;
+            //     var x = Math.round(standardVector.x * a + a + offsetx.left + boxwidth); //标准设备坐标转屏幕坐标 + 左偏移的尺寸 + 盒子的宽度
+            //     var y = Math.round(-standardVector.y * b + b + offsetx.top - boxheight ); //标准设备坐标转屏幕坐标
+
+            //     $('.pop_windows').css({
+            //       "display": "block",
+            //       "left": x ,
+            //       "top": y 
+            //     });
+        }
+    }
+</script>

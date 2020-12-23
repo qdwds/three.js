@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: wheat;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        二维三次贝尔曲线 动画没有自动闭合效果
+    </div>
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script src="../../node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+    let scene, camera, renderer, curve;
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(465, innerWidth / innerHeight, 1, 1000);
+        camera.position.z = 100;
+        // camera.position.x = 100
+        // camera.position.y = 100
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0xffffff);
+        document.body.appendChild(renderer.domElement);
+        scene.add(
+            new THREE.AxesHelper(120)
+        )
+
+        scene.add(
+            new THREE.AmbientLight(0xffffff, 1)
+        )
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+    }
+    function LightMesh() {
+        curve = new THREE.EllipseCurve(
+            20, 0,            // X,Y轴坐标
+            70, 50,           // X,Y圆度
+            0, 1.8 * Math.PI,  // X,Y轴显示多少
+            false,            // 是否按照顺时针显示
+            100                 // 原型的角度
+        );
+        //  切成多少片
+        const points = curve.getPoints(5);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);  //  通过上面切成片的点来显示
+
+        const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        // 创建定义好的线
+        const ellipse = new THREE.Line(geometry, material);
+        scene.add(ellipse)
+    }
+    function box() {
+        let GLTFLoader = new THREE.GLTFLoader();
+        GLTFLoader.load('../../models/motorcycle/scene.gltf',(g)=>{
+            scene.add(g.scene)
+            g.scene.scale.set(0.03,0.03,0.03)
+            g.scene.name = 'g'
+            console.log(g);
+            g.scene.rotation.z = 10;
+
+        })
+    }
+    function random() {
+        return Math.random() * 100
+    }
+    let progress = 0;
+    function render() {
+        requestAnimationFrame(render)
+        renderer.render(scene, camera)
+        progress += 0.009
+        if (curve && scene.getObjectByName('g')) {
+            let points = curve.getPoint(progress)
+            scene.getObjectByName('g').position.set(points.x, points.y, 0);
+            // scene.getObjectByName('g').rotation.set(points.x, points.y, 0)
+        }
+    }
+    window.onload = function () {
+        init();
+        LightMesh()
+        box();
+        render();
+    }
+</script>

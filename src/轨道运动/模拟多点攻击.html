@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: wheat;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        模拟多个坐标攻击效果
+    </div>
+</body>
+
+</html>
+<script src="../../node_modules/three/build/three.js"></script>
+<script src="../../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+<script>
+    let scene, camera, renderer, curve;
+
+    let positions = [
+        { x: random(), y: 0, z: random(), name: "box0", status: false },
+        { x: random(), y: 0, z: random(), name: "box1", status: false },
+        { x: random(), y: 0, z: random(), name: "box2", status: false },
+        { x: random(), y: 0, z: random(), name: "box3", status: false },
+        { x: random(), y: 0, z: random(), name: "box4", status: false },
+        { x: random(), y: 0, z: random(), name: "box5", status: false },
+        { x: random(), y: 0, z: random(), name: "box6", status: false },
+        { x: random(), y: 0, z: random(), name: "box7", status: false },
+        { x: random(), y: 0, z: random(), name: "box8", status: false },
+    ]
+    console.log(positions);
+    let boxPos = []
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 1, 1000);
+        camera.position.z = 200;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(innerWidth, innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        new THREE.OrbitControls(camera, renderer.domElement)
+
+        scene.add(new THREE.AxesHelper(50))
+    }
+
+
+    function box() {
+        for (let i = 0; i < positions.length; i++) {
+            let boxGeometry = new THREE.BoxGeometry(2, 2, 2);
+            let material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(Math.random() * 0xffffff)
+            });
+            let mesh = new THREE.Mesh(boxGeometry, material);
+            mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+            mesh.name = `${positions[i].name}`;
+            scene.add(mesh)
+        }
+    }
+    function random() {
+        return Math.random() > 0.5 ? Math.random() * -100:Math.random() * 100;
+        return Math.random() * 60
+    }
+
+
+    function lights(result) {
+        //  获取攻击和被攻击着的坐标
+        let s = null, e = null;
+        for (let i = 0; i < positions.length; i++) {
+            if (result.k === scene.getObjectByName(positions[i].name)['name']) {
+                s = scene.getObjectByName(positions[i].name)['position']
+                positions[i].status = true
+            } else if (result.v === scene.getObjectByName(positions[i].name)['name']) {
+                e = scene.getObjectByName(positions[i].name)['position']
+            }
+        };
+        // 攻击物体
+        attackSphere(s)
+        curve = new THREE.QuadraticBezierCurve3(
+            new THREE.Vector3(s.x, s.y, s.z),  //  起点
+            new THREE.Vector3(s.x,50, e.z),
+            new THREE.Vector3(e.x, e.y, e.z),  // 终点
+        );
+
+        const points = curve.getPoints(50);  //  整条线分成多少份
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        const material = new THREE.LineBasicMaterial({
+            color: 0xff0000,
+        });
+        const curveObject = new THREE.Line(geometry, material);
+        curveObject.name = 'curve'
+        scene.add(curveObject);
+
+    }
+
+    //  获取被攻击的下下标
+    function getCoordinates(name) {
+        let vector = null;
+        for (let i = 0; i < positions.length; i++) {
+            let geometry = scene.getObjectByName(positions[i].name);
+            if (name === geometry.name) {
+                vector = new THREE.Vector3(
+                    geometry.position.x,
+                    geometry.position.y,
+                    geometry.position.z,
+                )
+            }
+        }
+        return vector;
+    }
+
+    //  攻击的球体
+    function attackSphere(start) {
+        let sphereGeometry = new THREE.SphereGeometry(2.1, 32, 32);
+        let material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00
+        });
+        let mesh = new THREE.Mesh(sphereGeometry, material);
+        mesh.position.set(start.x, start.y, start.z)
+        mesh.name = 'sphere';
+        scene.add(mesh)
+    }
+    let progress = 0;
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+        for (let i = 0; i < positions.length; i++) {
+            if (positions[i].status) {
+                if (progress >= 1) {
+                    //  移除球体
+                    scene.remove(scene.getObjectByName('sphere'));
+                    progress = 0;
+                    positions[i].status = false;
+                    scene.remove(scene.getObjectByName('curve'))
+                    lights(randomBox());
+                }else if (curve && scene.getObjectByName('sphere')) {
+                    progress += 0.01;
+                    let points = curve.getPoint(progress);
+                    scene.getObjectByName('sphere').position.set(points.x, points.y, points.z)
+                }
+                
+            }
+        }
+    }
+    //  随机攻击
+    function randomBox(){
+        let list = [];
+        for (let i = 0; i < positions.length; i++) {
+           list.push(positions[i].name)
+            
+        }
+        let s = {}
+        s.k = list[Math.floor(Math.random() * 4)];
+        while(s.v == undefined){
+            s.v = list[Math.floor(Math.random() * 4)];
+            if(s.v !== s.k){
+                return s
+            }else{
+                s.v = undefined
+            }
+        }
+    }
+    window.onload = function () {
+        init();
+        box();
+        render();
+
+        lights(randomBox())
+    }
+</script>

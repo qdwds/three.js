@@ -119,10 +119,11 @@
             if (progress > 1.0) {
                 return;    //停留在管道末端,否则会一直跑到起点 循环再跑
             }
-            progress += 0.0009;
+            progress += 0.009;
             console.log(progress);
             if (curve) {
                 let point = curve.getPoint(progress);
+                console.log(point);
                 if (point && point.x) {
                     circleP.position.set(point.x, point.y, point.z);
                 }
