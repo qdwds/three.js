@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+
+<script src="../../node_modules/three/build/three.js"></script>
+<script>
+    let clock = new THREE.Clock();
+    //  启动运行 => 停止运行  = 运行时间
+    console.log(clock.start());
+    console.log(clock.getDelta ());
+    setTimeout(_=>{
+        clock.stop()
+        console.log(clock.elapsedTime);
+    },1000)
+</script>

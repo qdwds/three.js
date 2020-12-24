@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script src="../../node_modules/tween/tween.js"></script>
+<script>
+    const d = document.createElement('div');
+    const position = {
+        x: 0,
+        y:0
+    }
+    d.style.position = 'absolute';
+    d.style.top = `0px`;
+    d.style.left = `${position.x}px`;
+    d.style.width = `100px`;
+    d.style.height = `100px`;
+    d.style.background = 'red';
+    document.body.appendChild(d);
+
+    let tween = new TWEEN.Tween(position);
+    tween.to({ x: 111, y: 111 }, 1000)
+    tween.start();
+
+    animate()
+    function animate() {
+        requestAnimationFrame(animate);
+        TWEEN.update();
+    }
+
+    //  修改坐标
+    tween.onUpdate(function () {
+        d.style.left = `${this.x}px`;
+        d.style.top = `${this.y}px`;
+    });
+
+    d.onclick = ()=>{
+        tween.to({ x: Math.random() * 1000, y: Math.random() * 800 }, 2800);
+        tween.start();
+        console.log(position);
+
+
+        tween.onUpdate(function () {
+        d.style.left = `${this.x}px`;
+        d.style.top = `${this.y}px`;
+    });
+    }
+</script>

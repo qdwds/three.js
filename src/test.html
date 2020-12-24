@@ -28,33 +28,37 @@
 
     function createInit() {
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,10000);
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
         camera.position.z = 100;
 
         renderer = new THREE.WebGLRenderer();
-        renderer.setSize(innerWidth,innerHeight);
+        renderer.setSize(innerWidth, innerHeight);
         renderer.setClearColor(0xcccccc);
         document.body.appendChild(renderer.domElement)
-        new THREE.OrbitControls(camera,renderer.domElement)
+        new THREE.OrbitControls(camera, renderer.domElement)
     }
-    function axes(){
-       let ply = new THREE.PLYLoader();
-       ply.load('../models/che.ply',(ply => {
-     console.log(ply);
-    scene.add(ply)
-       }))
+    function axes() {
+
+        // COLOR
+        var colorKF = new THREE.ColorKeyframeTrack(
+            '.material.color',
+            [0, 1, 2],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1],
+            THREE.InterpolateDiscrete
+        );
+        scene.add(colorKF)
 
     }
-    function render(){
+    function render() {
         requestAnimationFrame(render);
-        renderer.render(scene,camera);
+        renderer.render(scene, camera);
     }
     function init() {
         createInit();
         axes();
         render();
     }
-    window.onload = function (){
+    window.onload = function () {
         init();
     }
 </script>
